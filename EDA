@@ -1,0 +1,19 @@
+#Code for tidying and EDA of CHRIS Data
+
+library(tidyverse)
+library(lubridate)
+
+#sample import
+
+
+#deindeintification
+
+reference_table <- data %>%
+    distinct(campusnickname, jurisdiction) %>%
+    mutate(campus_id = as.factor(interaction(campusnickname, jurisdiction))) %>%
+    mutate(campus_id = as.numeric(campus_id))
+
+data_di <- data %>%
+    mutate(campus_id = as.factor(interaction(campusnickname, jurisdiction))) %>%
+    mutate(campus_id = as.numeric(campus_id)) %>%
+    select(-c(campusnickname, jurisdiction, lastmodifiedby))
