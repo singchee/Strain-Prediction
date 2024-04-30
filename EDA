@@ -4,8 +4,8 @@ library(tidyverse)
 library(lubridate)
 
 #convert dates
-data$effectivefrom <- ymd_hms(data$effectivefrom)
-data$effectiveto <- ymd_hms(data$effectiveto)
+data$effectivefrom <- dmy_hms(data$effectivefrom)
+data$effectiveto <- dmy_hms(data$effectiveto)
 
 #sample import
 
