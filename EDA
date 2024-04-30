@@ -3,8 +3,11 @@
 library(tidyverse)
 library(lubridate)
 
-#sample import
+#convert dates
+data$effectivefrom <- ymd_hms(data$effectivefrom)
+data$effectiveto <- ymd_hms(data$effectiveto)
 
+#sample import
 
 #deindeintification
 
