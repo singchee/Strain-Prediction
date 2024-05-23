@@ -31,5 +31,10 @@ summary_data <- sample_data %>%
 complete_summary_data <- complete_data %>%
   left_join(summary_data, by = "time_window_start")
 
+#imputation downwards
+complete_summary_data <- complete_summary_data %>%
+  arrange(time_window_start) %>%
+  fill(everything(), .direction = "down")
+
 # View the transformed data
 print(complete_summary_data)
