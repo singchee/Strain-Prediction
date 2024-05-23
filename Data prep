@@ -1,0 +1,57 @@
+#Code for tidying and EDA of CHRIS Data
+
+library(tidyverse)
+library(lubridate)
+
+#convert dates
+data$effectivefrom <- dmy_hms(data$effectivefrom)
+data$effectiveto <- dmy_hms(data$effectiveto)
+
+#Create a sample dataset of 100000
+# Convert the 'effectivefrom' column to POSIXct format
+data_di <- data_di %>%
+  mutate(effectivefrom = as.POSIXct(effectivefrom, format="%Y-%m-%d %H:%M:%S"))
+
+# Check the range of the 'effectivefrom' dates
+print(range(data_di$effectivefrom))
+
+# Arrange the data by 'effectivefrom' and select the first 10,000 entries
+sample_data <- data_di %>%
+  arrange(effectivefrom) %>%
+  slice(1:1000000)
+
+
+#deindeintification
+
+#campuses
+reference_table <- data %>%
+    distinct(campusname) %>%
+    mutate(campus_id = as.factor(campusname)) %>%
+    mutate(campus_id = as.numeric(campus_id))
+
+data_di <- data %>%
+    mutate(campus_id = as.factor(campusname)) %>%
+    mutate(campus_id = as.numeric(campus_id)) %>%
+    select(-c(campusnickname, campusname, lastmodifiedby))
+
+#JURISDICTION
+juris_key <- data_di %>%
+  distinct(jurisdiction) %>%
+  mutate(jurisdiction_id = as.factor(jurisdiction)) %>%
+  mutate(jurisdiction_id = as.numeric(jurisdiction_id))
+
+# Print the reference table
+print(juris_key)
+
+# Update the dataset to use the numeric IDs
+data_di <- data_di %>%
+  mutate(jurisdiction_id = as.factor(jurisdiction)) %>%
+  mutate(jurisdiction_id = as.numeric(jurisdiction_id)) %>%
+  select(-jurisdiction)
+
+# View the anonymized data
+print(head(data_di))
+
+# Save the reference table to a CSV file
+write.csv(juris_key, "juris_key.csv", row.names = FALSE)
+
