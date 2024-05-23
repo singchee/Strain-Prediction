@@ -1,0 +1,35 @@
+
+# Load the dataset
+sample_data <- read.csv("sample_data.csv")
+
+#CREATING WIDE FORMAT DATA WITH 12 hr TIME SERIES WINDOWs
+
+# Convert the 'effectivefrom' column to datetime format
+sample_data$effectivefrom <- dmy_hm(sample_data$effectivefrom)
+
+# Generate a sequence of 12-hour windows
+sample_data <- sample_data %>%
+  mutate(time_window_start = floor_date(effectivefrom, unit = "12 hours"))
+
+# Determine the range of the dataset
+start_time <- min(sample_data$time_window_start)
+end_time <- max(sample_data$time_window_start)
+
+# Create a complete sequence of 12-hour windows
+complete_windows <- seq(from = start_time, to = end_time, by = "12 hours")
+
+# Create a data frame with all possible 12-hour windows
+complete_data <- data.frame(time_window_start = complete_windows)
+
+# Group and summarize the sample data
+summary_data <- sample_data %>%
+  group_by(time_window_start, fieldname) %>%
+  summarize(avg_value = mean(as.numeric(value), na.rm = TRUE)) %>%
+  pivot_wider(names_from = fieldname, values_from = avg_value)
+
+# Merge the complete windows with the summarized data
+complete_summary_data <- complete_data %>%
+  left_join(summary_data, by = "time_window_start")
+
+# View the transformed data
+print(complete_summary_data)
